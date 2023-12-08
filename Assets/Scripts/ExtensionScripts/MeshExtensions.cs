@@ -1,9 +1,11 @@
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
 public static class MeshExtensions 
 {
+    [BurstCompile]
     public static Mesh BuildMeshForLanelet(NativeList<float3> leftVertices, NativeList<float3> rightVertices)
     {
         //Find bigger way
@@ -70,6 +72,7 @@ public static class MeshExtensions
         return mesh;
     }
     
+    [BurstCompile]
     private static int[] CalculateTrianglesForLanelet(int sumOfVerticeCount, bool isEqual, Vector3[] vertices)
     {
         // Find triangles count
