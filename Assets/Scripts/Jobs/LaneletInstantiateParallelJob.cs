@@ -3,33 +3,36 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
-[BurstCompile]
-public struct LaneletInstantiateParallelJob : IJobParallelFor
+namespace Curvit.Demos.DOTS_Load
 {
-    [ReadOnly] public NativeArray<OSMNodeData> OsmNodeDataArray;
-    [ReadOnly] public NativeArray<OSMWayData> OsmWayDataArray;
-    [ReadOnly] public NativeArray<OSMLaneletData> OsmLaneletDataArray;
-    [ReadOnly] public NativeList<int> OsmWayNodeRefDataList;
-    [ReadOnly] public Entity LaneletEntityPrefab;
-    [ReadOnly] public int sortKey;
-    
-    public EntityCommandBuffer.ParallelWriter ECB;
-    
     [BurstCompile]
-    public void Execute(int index)
+    public struct LaneletInstantiateParallelJob : IJobParallelFor
     {
-        // var entity = ECB.CreateEntity(sortKey);
-        var entity = ECB.Instantiate(sortKey, LaneletEntityPrefab);
-        var laneletData = OsmLaneletDataArray[index];
-        
-        ECB.AddComponent<LaneletComponent>(sortKey, entity, new LaneletComponent
+        [ReadOnly] public NativeArray<OSMNodeData> OsmNodeDataArray;
+        [ReadOnly] public NativeArray<OSMWayData> OsmWayDataArray;
+        [ReadOnly] public NativeArray<OSMLaneletData> OsmLaneletDataArray;
+        [ReadOnly] public NativeList<int> OsmWayNodeRefDataList;
+        [ReadOnly] public Entity LaneletEntityPrefab;
+        [ReadOnly] public int sortKey;
+
+        public EntityCommandBuffer.ParallelWriter ECB;
+
+        [BurstCompile]
+        public void Execute(int index)
         {
-            ID = laneletData.ID,
-            OsmLaneletDataFlag = laneletData.OsmLaneletDataFlag,
-            SpeedLimit = laneletData.SpeedLimit,
-            WayReference_Left = laneletData.WayReference_Left,
-            WayReference_Right = laneletData.WayReference_Right,
-            WayReference_Middle = laneletData.WayReference_Middle
-        });
+            // var entity = ECB.CreateEntity(sortKey);
+            var entity = ECB.Instantiate(sortKey, LaneletEntityPrefab);
+            var laneletData = OsmLaneletDataArray[index];
+
+            ECB.AddComponent<LaneletComponent>(sortKey, entity, new LaneletComponent
+            {
+                ID = laneletData.ID,
+                OsmLaneletDataFlag = laneletData.OsmLaneletDataFlag,
+                SpeedLimit = laneletData.SpeedLimit,
+                WayReference_Left = laneletData.WayReference_Left,
+                WayReference_Right = laneletData.WayReference_Right,
+                WayReference_Middle = laneletData.WayReference_Middle
+            });
+        }
     }
 }

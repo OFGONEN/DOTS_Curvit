@@ -1,7 +1,10 @@
 using Unity.Entities;
 
-public struct WayComponent : IComponentData
+namespace Curvit.Demos.DOTS_Load
 {
-    public int ID;
-    public OSMWayDataFlag OsmWayDataFlag;
+    public struct WayComponent : IComponentData
+    {
+        public int ID;
+        public OSMWayDataFlag OsmWayDataFlag;
+    }
 }

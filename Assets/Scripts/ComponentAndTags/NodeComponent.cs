@@ -1,8 +1,11 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-public struct NodeComponent : IComponentData
+namespace Curvit.Demos.DOTS_Load
 {
-    public int Id;
-    public float3 Position;
+    public struct NodeComponent : IComponentData
+    {
+        public int Id;
+        public float3 Position;
+    }
 }

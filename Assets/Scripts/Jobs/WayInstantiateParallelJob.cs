@@ -3,37 +3,40 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
-[BurstCompile]
-public struct WayInstantiateParallelJob : IJobParallelFor
+namespace Curvit.Demos.DOTS_Load
 {
-    [ReadOnly] public NativeArray<OSMWayData> OsmWayDataArray;
-    [ReadOnly] public NativeArray<OSMNodeData> OsmNodeDataArray;
-    [ReadOnly] public NativeList<int> OsmWayNodeRefDataList;
-    [ReadOnly] public int sortKey;
-    public EntityCommandBuffer.ParallelWriter ECB;
-    
     [BurstCompile]
-    public void Execute(int index)
+    public struct WayInstantiateParallelJob : IJobParallelFor
     {
-        var entity = ECB.CreateEntity(sortKey);
-        var wayNodeData = OsmWayDataArray[index];
-        
-        ECB.AddComponent<WayComponent>(sortKey, entity, new WayComponent
-        {
-            ID = wayNodeData.Id,
-            OsmWayDataFlag = wayNodeData.OSMWayDataFlag
-        });
+        [ReadOnly] public NativeArray<OSMWayData> OsmWayDataArray;
+        [ReadOnly] public NativeArray<OSMNodeData> OsmNodeDataArray;
+        [ReadOnly] public NativeList<int> OsmWayNodeRefDataList;
+        [ReadOnly] public int sortKey;
+        public EntityCommandBuffer.ParallelWriter ECB;
 
-        var wayNodeRefCount = wayNodeData.NodeRefCount;
-        var bufferComponent = ECB.AddBuffer<NodeReferenceBufferComponent>(sortKey, entity);
-        bufferComponent.Length = wayNodeRefCount;
-        
-        for (int i = 0; i < wayNodeRefCount; i++)
+        [BurstCompile]
+        public void Execute(int index)
         {
-            bufferComponent[i] = new NodeReferenceBufferComponent
+            var entity = ECB.CreateEntity(sortKey);
+            var wayNodeData = OsmWayDataArray[index];
+
+            ECB.AddComponent<WayComponent>(sortKey, entity, new WayComponent
             {
-                OSMNodeData = OsmNodeDataArray[OsmWayNodeRefDataList[wayNodeData.NodeRefSlice_Start + i]]
-            };
+                ID = wayNodeData.Id,
+                OsmWayDataFlag = wayNodeData.OSMWayDataFlag
+            });
+
+            var wayNodeRefCount = wayNodeData.NodeRefCount;
+            var bufferComponent = ECB.AddBuffer<NodeReferenceBufferComponent>(sortKey, entity);
+            bufferComponent.Length = wayNodeRefCount;
+
+            for (int i = 0; i < wayNodeRefCount; i++)
+            {
+                bufferComponent[i] = new NodeReferenceBufferComponent
+                {
+                    OSMNodeData = OsmNodeDataArray[OsmWayNodeRefDataList[wayNodeData.NodeRefSlice_Start + i]]
+                };
+            }
         }
     }
 }

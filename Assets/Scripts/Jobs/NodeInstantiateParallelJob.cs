@@ -5,32 +5,35 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-[BurstCompile]
-public struct NodeInstantiateParallelJob : IJobParallelFor
+namespace Curvit.Demos.DOTS_Load
 {
-    [ReadOnly] public NativeArray<OSMNodeData> OsmNodeDataArray;
-    [ReadOnly] public Entity NodeEntityPrefab;
-    [ReadOnly] public int sortKey;
-    [ReadOnly] public float NodeSize;
-    public EntityCommandBuffer.ParallelWriter ECB;
-    
     [BurstCompile]
-    public void Execute(int index)
+    public struct NodeInstantiateParallelJob : IJobParallelFor
     {
-        var entity = ECB.Instantiate(sortKey, NodeEntityPrefab);
-        var osmNodeData = OsmNodeDataArray[index];
-        
-        ECB.AddComponent<NodeComponent>(sortKey, entity, new NodeComponent
+        [ReadOnly] public NativeArray<OSMNodeData> OsmNodeDataArray;
+        [ReadOnly] public Entity NodeEntityPrefab;
+        [ReadOnly] public int sortKey;
+        [ReadOnly] public float NodeSize;
+        public EntityCommandBuffer.ParallelWriter ECB;
+
+        [BurstCompile]
+        public void Execute(int index)
         {
-            Id = osmNodeData.Id,
-            Position = osmNodeData.Position,
-        });
-        
-        ECB.SetComponent(sortKey, entity, new LocalTransform
-        {
-            Position = osmNodeData.Position,
-            Rotation = quaternion.identity,
-            Scale = NodeSize
-        });
+            var entity = ECB.Instantiate(sortKey, NodeEntityPrefab);
+            var osmNodeData = OsmNodeDataArray[index];
+
+            ECB.AddComponent<NodeComponent>(sortKey, entity, new NodeComponent
+            {
+                Id = osmNodeData.Id,
+                Position = osmNodeData.Position,
+            });
+
+            ECB.SetComponent(sortKey, entity, new LocalTransform
+            {
+                Position = osmNodeData.Position,
+                Rotation = quaternion.identity,
+                Scale = NodeSize
+            });
+        }
     }
 }
