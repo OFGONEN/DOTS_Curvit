@@ -1,9 +1,7 @@
-using System;
 using System.Xml;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
 
 namespace Curvit.Demos.DOTS_Load
@@ -21,6 +19,9 @@ namespace Curvit.Demos.DOTS_Load
         private XmlNodeList XMLNodeList_Node;
         private XmlNodeList XMLNodeList_Way;
         private XmlNodeList XMLNodeList_Lanelet;
+
+        private bool isLoaded;
+        private long elapsedTime;
 
         private void OnDisable()
         {
@@ -254,6 +255,36 @@ namespace Curvit.Demos.DOTS_Load
                 }
 
                 LaneletOsmDataArray[i] = osmLaneletData;
+            }
+        }
+
+        private void OnGUI()
+        {
+            if(isLoaded)
+            {
+                GUI.Button(
+                    new Rect(new Vector2(Screen.width / 2f, Screen.height * 0.01f), new Vector2(200f, 25f)),
+                    "Loaded In: " + elapsedTime + "ms!"
+                );
+            }
+            else
+            {
+                var isClicked = GUI.Button(
+                    new Rect(new Vector2(Screen.width / 2f, Screen.height * 0.01f), new Vector2(200f, 25f)),
+                    "Click To Load!"
+                );
+
+                if (isClicked)
+                {
+                    var stopWatch = new System.Diagnostics.Stopwatch();
+                    stopWatch.Start();
+                    InitializeXMLLoad();
+                    stopWatch.Stop();
+
+                    isLoaded = true;
+                    elapsedTime = stopWatch.ElapsedMilliseconds;
+                    UnityEngine.Debug.Log("Time To Complete: " + stopWatch.ElapsedMilliseconds);
+                }
             }
         }
     }
