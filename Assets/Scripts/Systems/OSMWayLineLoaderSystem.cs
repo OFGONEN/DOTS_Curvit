@@ -22,7 +22,6 @@ namespace Curvit.Demos.DOTS_Load
         {
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var osmLoadComponent = SystemAPI.GetSingleton<OSMLoadComponent>();

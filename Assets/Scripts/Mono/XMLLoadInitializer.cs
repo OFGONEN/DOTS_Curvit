@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Xml;
 using UnityEngine;
 using Unity.Collections;
@@ -35,7 +37,12 @@ namespace Curvit.Demos.DOTS_Load
         private void InitializeXMLLoad()
         {
             var xmlDocument = new XmlDocument();
-            xmlDocument.Load(OsmPath);
+
+#if UNITY_EDITOR
+            xmlDocument.Load("Assets/" + OsmPath);
+#else
+            xmlDocument.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), OsmPath));
+#endif
             XMLNode_OSM = xmlDocument.SelectSingleNode("osm");
 
             ReadOSMNodeData();

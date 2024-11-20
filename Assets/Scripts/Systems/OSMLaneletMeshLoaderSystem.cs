@@ -23,7 +23,6 @@ namespace Curvit.Demos.DOTS_Load
         {
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var material = Resources.Load<Material>("Materials/MAT_Lanelet");

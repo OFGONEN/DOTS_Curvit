@@ -382,7 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1a73d0e22723642869a5442dbd239c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OsmPath: Assets/dots_test.osm
+  OsmPath: dots_test.osm
 --- !u!4 &733298111
 Transform:
   m_ObjectHideFlags: 0
