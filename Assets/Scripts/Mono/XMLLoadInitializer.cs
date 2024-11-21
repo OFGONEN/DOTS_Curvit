@@ -24,6 +24,7 @@ namespace Curvit.Demos.DOTS_Load
 
         private bool isLoaded;
         private long elapsedTime;
+        private long readTime;
 
         private void OnDisable()
         {
@@ -34,7 +35,7 @@ namespace Curvit.Demos.DOTS_Load
         }
 
         [ContextMenu("Load XML")]
-        private void InitializeXMLLoad()
+        private long InitializeXMLLoad()
         {
             var xmlDocument = new XmlDocument();
 
@@ -45,9 +46,12 @@ namespace Curvit.Demos.DOTS_Load
 #endif
             XMLNode_OSM = xmlDocument.SelectSingleNode("osm");
 
+            var stopWatch = new System.Diagnostics.Stopwatch();
+            stopWatch.Start();
             ReadOSMNodeData();
             ReadOSMWayData();
             ReadLaneletData();
+            stopWatch.Stop();
 
             //Spawn Entity
             var OsmLoadComponent = new OSMLoadComponent
@@ -62,6 +66,8 @@ namespace Curvit.Demos.DOTS_Load
             var entity = entityManager.CreateEntity();
 
             entityManager.AddComponentData(entity, OsmLoadComponent);
+
+            return stopWatch.ElapsedMilliseconds;
         }
 
         private void ReadOSMNodeData()
@@ -270,8 +276,8 @@ namespace Curvit.Demos.DOTS_Load
             if(isLoaded)
             {
                 GUI.Button(
-                    new Rect(new Vector2(Screen.width / 2f, Screen.height * 0.01f), new Vector2(200f, 25f)),
-                    "Loaded In: " + elapsedTime + "ms!"
+                    new Rect(new Vector2(Screen.width / 2f, Screen.height * 0.01f), new Vector2(200f, 50f)),
+                    "Loaded In: " + elapsedTime + "ms!\nRead Time: " + readTime + "ms."
                 );
             }
             else
@@ -285,12 +291,11 @@ namespace Curvit.Demos.DOTS_Load
                 {
                     var stopWatch = new System.Diagnostics.Stopwatch();
                     stopWatch.Start();
-                    InitializeXMLLoad();
+                    readTime = InitializeXMLLoad();
                     stopWatch.Stop();
 
                     isLoaded = true;
                     elapsedTime = stopWatch.ElapsedMilliseconds;
-                    UnityEngine.Debug.Log("Time To Complete: " + stopWatch.ElapsedMilliseconds);
                 }
             }
         }
